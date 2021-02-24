@@ -36,12 +36,12 @@ void swap_str(double a[N][N], unsigned str1, unsigned str2) {
 
 
 void sort(double a[N][N], unsigned transp[N]) {
-    for (unsigned step = ceil(N / 3); step > 0; step /= 1.5)
-        for (unsigned i = 0; i < N; i++)
-            for (unsigned j = i + step; j < N; j += step)
-                if (transp[i] > transp[j]) {
-                    std::swap(transp[i], transp[j]);
-                    swap_str(a, i, j);
+    unsigned last_swap = N - 1;
+    for (unsigned i = 0; i < N && i != last_swap; i = (i + 1) % N)
+        if (i != transp[i]) {
+            std::swap(transp[i], transp[transp[i]]);
+            swap_str(a, i, transp[i]);
+            last_swap = i;
     }
 }
 
