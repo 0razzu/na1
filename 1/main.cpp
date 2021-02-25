@@ -1,7 +1,7 @@
 #include <iostream>
 
 
-const unsigned N = 4;
+const unsigned N = 5;
 const double EPS = 1E-6;
 const unsigned WIDTH = 6;
 const unsigned PRECISION = 3;
@@ -35,20 +35,34 @@ void swap_str(double a[N][N], unsigned str1, unsigned str2) {
 }
 
 
-void sort(double a[N][N], unsigned transp[N]) {
+void sort_str(double a[N][N], unsigned transp[N]) {
     unsigned last_swap = N - 1;
     for (unsigned i = 0; i < N && i != last_swap; i = (i + 1) % N)
         if (i != transp[i]) {
-            std::swap(transp[i], transp[transp[i]]);
             swap_str(a, i, transp[i]);
+            std::swap(transp[i], transp[transp[i]]);
             last_swap = i;
+            print(a);
     }
 }
 
 
-void up_triangularize(double a[N][N], unsigned transp[N]) {
-    for (unsigned i = 0; i < N; i++)
-        transp[i] = i;
+void sort_col(double a[N][N], unsigned transp[N]) {
+    unsigned last_swap = N - 1;
+    for (unsigned j = 0; j < N && j != last_swap; j = (j + 1) % N)
+        if (j != transp[j]) {
+            std::swap(a[j], a[transp[j]]);
+            std::swap(transp[j], transp[transp[j]]);
+            last_swap = j;
+    }
+}
+
+
+void up_triangularize(double a[N][N], unsigned col_transp[N], unsigned str_transp[N]) {
+    for (unsigned i = 0; i < N; i++) {
+        col_transp[i] = i;
+        str_transp[i] = i;
+    }
     
     for (unsigned j = 0; j < N - 1; j++) {
         if (j < N - 1) {
@@ -68,8 +82,19 @@ void up_triangularize(double a[N][N], unsigned transp[N]) {
                 }
             }
             
-            std::swap(transp[j], transp[max_len_col]);
+            std::swap(col_transp[j], col_transp[max_len_col]);
             std::swap(a[j], a[max_len_col]);
+            
+            double max_elem = a[j][j + 1];
+            unsigned max_elem_str = j + 1;
+            for (unsigned i = j + 2; i < N; i++)
+                if (a[j][i] > max_elem) {
+                    max_elem = a[j][i];
+                    max_elem_str = i;
+                }
+            
+            std::swap(str_transp[j + 1], str_transp[max_elem_str]);
+            swap_str(a, j + 1, max_elem_str);
         }
         
         for (unsigned i = j + 1; i < N; i++) {
@@ -118,7 +143,7 @@ void revert_tr(double a[N][N]) {
 }
 
 
-void de_up_triangularize(double a[N][N], unsigned transp[N]) {
+void de_up_triangularize(double a[N][N], unsigned col_transp[N], unsigned str_transp[N]) {
     for (int j = N - 2; j >= 0; j--) {
         double q[N];
         for (unsigned i = j + 1; i < N; i++) {
@@ -149,25 +174,27 @@ void de_up_triangularize(double a[N][N], unsigned transp[N]) {
             }
     }
     
-    sort(a, transp);
+    sort_str(a, col_transp);
+    sort_col(a, str_transp);
 }
 
 
 int main() {
     double a[N][N] = {
-        {2, 2, 1, 8},      // array of columns
-        {4, 2, 1, 0},
-        {8, 3, 1, 0},
-        {1, 2, 1, 8}
+        {2, 2, 1, 8, 9},      // array of columns
+        {4, 2, 1, 0, 9},
+        {8, 3, 1, 0, 9},
+        {1, 2, 1, 8, 9},
+        {9, 0, 9, 0, 0}
     };
-    unsigned transp[N];
+    unsigned col_transp[N], str_transp[N];
 
     print(a);
-    up_triangularize(a, transp);
+    up_triangularize(a, col_transp, str_transp);
     print(a);
     revert_tr(a);
     print(a);
-    de_up_triangularize(a, transp);
+    de_up_triangularize(a, col_transp, str_transp);
     print(a);
     
     return 0;
