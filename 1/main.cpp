@@ -42,7 +42,6 @@ void sort_str(double a[N][N], unsigned transp[N]) {
             swap_str(a, i, transp[i]);
             std::swap(transp[i], transp[transp[i]]);
             last_swap = i;
-            print(a);
     }
 }
 
