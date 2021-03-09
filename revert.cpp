@@ -7,40 +7,13 @@ int sign(double x) {
 }
 
 
-void swap_str(double a[N][N], unsigned str1, unsigned str2) {
-    for (unsigned j = 0; j < N; j++)
+void swap_str(double a[N][N], unsigned str1, unsigned str2, unsigned from) {
+    for (unsigned j = from; j < N; j++)
         std::swap(a[j][str1], a[j][str2]);
 }
 
 
-void sort_str(double a[N][N], unsigned transp[N]) {
-    unsigned last_swap = N - 1;
-    for (unsigned i = 0; i < N && i != last_swap; i = (i + 1) % N)
-        if (i != transp[i]) {
-            swap_str(a, i, transp[i]);
-            std::swap(transp[i], transp[transp[i]]);
-            last_swap = i;
-    }
-}
-
-
-void sort_col(double a[N][N], unsigned transp[N]) {
-    unsigned last_swap = N - 1;
-    for (unsigned j = 0; j < N && j != last_swap; j = (j + 1) % N)
-        if (j != transp[j]) {
-            std::swap(a[j], a[transp[j]]);
-            std::swap(transp[j], transp[transp[j]]);
-            last_swap = j;
-    }
-}
-
-
 void up_triangularize(double a[N][N], unsigned col_transp[N], unsigned str_transp[N]) {
-    for (unsigned i = 0; i < N; i++) {
-        col_transp[i] = i;
-        str_transp[i] = i;
-    }
-    
     for (unsigned j = 0; j < N - 1; j++) {
         if (j < N - 1) {
             double max_len = 0;
@@ -59,7 +32,7 @@ void up_triangularize(double a[N][N], unsigned col_transp[N], unsigned str_trans
                 }
             }
             
-            std::swap(col_transp[j], col_transp[max_len_col]);
+            col_transp[j] = max_len_col;
             std::swap(a[j], a[max_len_col]);
             
             double max_elem = fabs(a[j][j + 1]);
@@ -70,8 +43,8 @@ void up_triangularize(double a[N][N], unsigned col_transp[N], unsigned str_trans
                     max_elem_str = i;
                 }
             
-            std::swap(str_transp[j + 1], str_transp[max_elem_str]);
-            swap_str(a, j + 1, max_elem_str);
+            str_transp[j + 1] = max_elem_str;
+            swap_str(a, j + 1, max_elem_str, j);
         }
         
         for (unsigned i = j + 1; i < N; i++) {
@@ -146,10 +119,10 @@ void de_up_triangularize(double a[N][N], unsigned col_transp[N], unsigned str_tr
                     a[i][k] = -s * jk + c * a[i][k];
                 }
             }
+        
+        std::swap(a[j + 1], a[str_transp[j + 1]]);
+        swap_str(a, j, col_transp[j], j);
     }
-    
-    sort_str(a, col_transp);
-    sort_col(a, str_transp);
 }
 
 
@@ -160,45 +133,3 @@ void revert(double a[N][N]) {
     revert_tr(a);
     de_up_triangularize(a, col_transp, str_transp);
 }
-
-
-//int main() {
-//    double a[N][N] = {
-//        {2, 2, 1, 8, 9},      // array of columns
-//        {4, 2, 1, 0, 9},
-//        {8, 3, 1, 0, 9},
-//        {1, 2, 1, 8, 9},
-//        {9, 0, 9, 0, 0}
-//    };
-//    unsigned col_transp[N], str_transp[N];
-//
-//    print(a);
-//    up_triangularize(a, col_transp, str_transp);
-//    print(a);
-//    revert_tr(a);
-//    print(a);
-//    de_up_triangularize(a, col_transp, str_transp);
-//    print(a);
-//
-//    return 0;
-//}
-
-
-//int main() {
-//    double a[N][N];
-//
-//    for (unsigned i = 0; i < N; i++)
-//        for (unsigned j = 0; j < N; j++)
-//            std::cin >> a[j][i];
-//
-//    revert(a);
-//
-//    for (unsigned i = 0; i < N; i++) {
-//        for (unsigned j = 0; j < N; j++)
-//            std::cout << a[j][i] << ' ';
-//
-//        std::cout << std::endl;
-//    }
-//
-//    return 0;
-//}
