@@ -1,27 +1,5 @@
+#include "revert.hpp"
 #include <iostream>
-
-
-const unsigned N = 5;
-const double EPS = 1E-6;
-const unsigned WIDTH = 6;
-const unsigned PRECISION = 3;
-
-
-void print(double a[N][N]) {
-    std::cout.precision(PRECISION);
-    std::cout.setf(std::ios::fixed);
-    
-    for (unsigned i = 0; i < N; i++) {
-        for (unsigned j = 0; j < N; j++) {
-            std::cout.width(WIDTH);
-            std::cout << a[j][i] << ' ';
-        }
-        
-        std::cout << std::endl;
-    }
-    
-    std::cout << std::endl;
-}
 
 
 int sign(double x) {
@@ -84,11 +62,11 @@ void up_triangularize(double a[N][N], unsigned col_transp[N], unsigned str_trans
             std::swap(col_transp[j], col_transp[max_len_col]);
             std::swap(a[j], a[max_len_col]);
             
-            double max_elem = a[j][j + 1];
+            double max_elem = fabs(a[j][j + 1]);
             unsigned max_elem_str = j + 1;
             for (unsigned i = j + 2; i < N; i++)
-                if (a[j][i] > max_elem) {
-                    max_elem = a[j][i];
+                if (fabs(a[j][i]) > max_elem) {
+                    max_elem = fabs(a[j][i]);
                     max_elem_str = i;
                 }
             
@@ -99,7 +77,7 @@ void up_triangularize(double a[N][N], unsigned col_transp[N], unsigned str_trans
         for (unsigned i = j + 1; i < N; i++) {
             double a_i = a[j][i];
             
-            if (fabs(a_i) > EPS) {
+            if (a_i != 0) {
                 double a_j = a[j][j];
                 double z = fmax(fabs(a_j), fabs(a_i));
                 double a_l = fmin(fabs(a_j), fabs(a_i)) / z;
@@ -124,9 +102,6 @@ void up_triangularize(double a[N][N], unsigned col_transp[N], unsigned str_trans
 
 void revert_tr(double a[N][N]) {
     for (int i = N - 1; i >= 0; i--) {
-        if (abs(a[i][i]) < EPS)
-            throw std::runtime_error("det(A) = 0!");
-        
         for (int j = N - 1; j >= i; j--) {
             if (i != j) {
                 double ij = 0;
@@ -151,7 +126,7 @@ void de_up_triangularize(double a[N][N], unsigned col_transp[N], unsigned str_tr
         }
         
         for (unsigned i = N - 1; i > j; i--)
-            if (fabs(q[i]) > EPS) {
+            if (q[i] != 0) {
                 double s, c;
                 
                 if (q[i] < 0) {
@@ -178,23 +153,52 @@ void de_up_triangularize(double a[N][N], unsigned col_transp[N], unsigned str_tr
 }
 
 
-int main() {
-    double a[N][N] = {
-        {2, 2, 1, 8, 9},      // array of columns
-        {4, 2, 1, 0, 9},
-        {8, 3, 1, 0, 9},
-        {1, 2, 1, 8, 9},
-        {9, 0, 9, 0, 0}
-    };
+void revert(double a[N][N]) {
     unsigned col_transp[N], str_transp[N];
-
-    print(a);
-    up_triangularize(a, col_transp, str_transp);
-    print(a);
-    revert_tr(a);
-    print(a);
-    de_up_triangularize(a, col_transp, str_transp);
-    print(a);
     
-    return 0;
+    up_triangularize(a, col_transp, str_transp);
+    revert_tr(a);
+    de_up_triangularize(a, col_transp, str_transp);
 }
+
+
+//int main() {
+//    double a[N][N] = {
+//        {2, 2, 1, 8, 9},      // array of columns
+//        {4, 2, 1, 0, 9},
+//        {8, 3, 1, 0, 9},
+//        {1, 2, 1, 8, 9},
+//        {9, 0, 9, 0, 0}
+//    };
+//    unsigned col_transp[N], str_transp[N];
+//
+//    print(a);
+//    up_triangularize(a, col_transp, str_transp);
+//    print(a);
+//    revert_tr(a);
+//    print(a);
+//    de_up_triangularize(a, col_transp, str_transp);
+//    print(a);
+//
+//    return 0;
+//}
+
+
+//int main() {
+//    double a[N][N];
+//
+//    for (unsigned i = 0; i < N; i++)
+//        for (unsigned j = 0; j < N; j++)
+//            std::cin >> a[j][i];
+//
+//    revert(a);
+//
+//    for (unsigned i = 0; i < N; i++) {
+//        for (unsigned j = 0; j < N; j++)
+//            std::cout << a[j][i] << ' ';
+//
+//        std::cout << std::endl;
+//    }
+//
+//    return 0;
+//}
