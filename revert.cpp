@@ -74,8 +74,8 @@ void up_triangularize(double a[N][N], unsigned col_transp[N], unsigned str_trans
 
 
 void revert_tr(double a[N][N]) {
-    for (int i = N - 1; i >= 0; i--) {
-        for (int j = N - 1; j >= i; j--) {
+    for (unsigned i = N - 1; i >= 0 && i < UINT_MAX; i--) {
+        for (unsigned j = N - 1; j >= i && j < UINT_MAX; j--) {
             if (i != j) {
                 double ij = 0;
                 for (unsigned k = i + 1; k <= j; k++)
@@ -91,7 +91,7 @@ void revert_tr(double a[N][N]) {
 
 
 void de_up_triangularize(double a[N][N], unsigned col_transp[N], unsigned str_transp[N]) {
-    for (int j = N - 2; j >= 0; j--) {
+    for (unsigned j = N - 2; j >= 0 && j < UINT_MAX; j--) {
         double q[N];
         for (unsigned i = j + 1; i < N; i++) {
             q[i] = a[j][i];
