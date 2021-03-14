@@ -1,5 +1,4 @@
 #include "revert.hpp"
-#include <iostream>
 
 
 int sign(double x) {

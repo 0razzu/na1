@@ -1,6 +1,8 @@
 #ifndef revert_hpp
 #define revert_hpp
 
+#include <iostream>
+
 
 const unsigned N = 100;
 
