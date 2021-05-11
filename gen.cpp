@@ -1,4 +1,4 @@
-#include "revert.hpp"
+#include "invert.hpp"
 #include <iostream>
 #include <cmath>
 
@@ -75,7 +75,7 @@ int main(int argc, const char* argv[]) { // α β a/b ζ_max y/i/j
                 for (int i = 0; i < N; i++)
                     a_inv_c[j][i] = a[j][i];
             
-            revert(a_inv_c);
+            invert(a_inv_c);
             
             // ||Z||
             double z[N][N];

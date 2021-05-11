@@ -1,4 +1,4 @@
-#include "revert.hpp"
+#include "invert.hpp"
 
 
 int sign(double x) {
@@ -72,7 +72,7 @@ void up_triangularize(double a[N][N], unsigned col_transp[N], unsigned str_trans
 }
 
 
-void revert_tr(double a[N][N]) {
+void invert_tr(double a[N][N]) {
     for (unsigned i = N - 1; i >= 0 && i < UINT_MAX; i--) {
         for (unsigned j = N - 1; j >= i && j < UINT_MAX; j--) {
             if (i != j) {
@@ -125,10 +125,10 @@ void de_up_triangularize(double a[N][N], unsigned col_transp[N], unsigned str_tr
 }
 
 
-void revert(double a[N][N]) {
+void invert(double a[N][N]) {
     unsigned col_transp[N], str_transp[N];
     
     up_triangularize(a, col_transp, str_transp);
-    revert_tr(a);
+    invert_tr(a);
     de_up_triangularize(a, col_transp, str_transp);
 }
